@@ -1,0 +1,42 @@
+version: '2'
+services:
+  db:
+    image: postgres:9.4.1
+    volumes:
+      - ./tmp/db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=Password*1
+    ports:
+      - "5432:5432"
+  redis:
+    image: 'redis:5-alpine'
+    command: redis-server --port 6380
+    ports:
+      - '6380:6380'
+  web:
+    build: .
+    command: bin/rails server --port 3000 --binding 0.0.0.0
+    ports:
+      - "3000:3000"
+    links:
+      - db
+      - redis
+    volumes:
+      - .:/myapp
+    environment:
+      - RAILS_ENV=production
+      - POSTGRES_PASSWORD=Password*1
+      - REDIS_URL_CACHING=redis://redis:6380/0
+  worker:
+    build: .
+    command: bundle exec sidekiq -e production -c 5
+    environment:
+      RAILS_ENV: production
+      REDIS_URL_CACHING: redis://redis:6380/12
+    links:
+      - db
+      - redis
+  # data:
+  #   image: busybox
+  #   volumes:
+  #   - "/var/lib/postgresql"
