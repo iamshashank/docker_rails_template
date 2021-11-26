@@ -33,4 +33,5 @@ ENTRYPOINT ["entrypoint.sh"]
 
 EXPOSE 3000
 # Start the main process.
-CMD ["rails", "server", "-b", "0.0.0.0"]
+# CMD ["rails", "server", "-b", "0.0.0.0"]
+CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"]
