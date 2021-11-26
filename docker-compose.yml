@@ -22,23 +22,30 @@ services:
     volumes:
       - .:/myapp
     environment:
-      - VIRTUAL_HOST=web-app.docker
       - RAILS_ENV=production
       - POSTGRES_PASSWORD=Password*1
       - REDIS_URL_CACHING=redis://redis:6380/0
+    depends_on:
+      - db
+      - redis
   worker:
     build: .
     command: bundle exec sidekiq -e production -c 5
     environment:
       RAILS_ENV: production
+      POSTGRES_PASSWORD: Password*1
       REDIS_URL_CACHING: redis://redis:6380/12
     links:
       - db
+      - web
       - redis
-  proxy:
-    privileged: true
-    image: jwilder/nginx-proxy:latest
+    depends_on:
+      - web
+  nginx:
+    build:
+      context: .
+      dockerfile: ./nginx.Dockerfile
     ports:
       - "80:80"
-    volumes:
-      - "/var/run/docker.sock:/tmp/docker.sock"
+    depends_on:
+      - web
