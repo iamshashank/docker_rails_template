@@ -8,11 +8,13 @@ services:
       - POSTGRES_PASSWORD=Password*1
     ports:
       - "5432:5432"
+    restart: always
   redis:
     image: 'redis:5-alpine'
     command: redis-server --port 6380
     ports:
       - '6380:6380'
+    restart: always
   web:
     build: .
     command: bash -c "bundle exec puma -C config/puma.rb"
@@ -28,6 +30,7 @@ services:
     depends_on:
       - db
       - redis
+    restart: on-failure  
   worker:
     build: .
     command: bundle exec sidekiq -e production -c 5
@@ -41,6 +44,7 @@ services:
       - redis
     depends_on:
       - web
+    restart: on-failure  
   nginx:
     build:
       context: .
