@@ -3,7 +3,7 @@
 ## Requirement
 * Docker Compose
 
-# useage
+## Useage
 ```
 docker-compose up
 docker-compose up --scale web=6 --scale worker=1
