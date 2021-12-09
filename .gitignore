@@ -11,7 +11,9 @@
 /log/*
 /tmp/*
 !/log/.keep
-!/tmp/.keep
+
+# We need to commit the tmp package
+# !/tmp/.keep
 
 # Ignore pidfiles, but keep the directory.
 /tmp/pids/*
